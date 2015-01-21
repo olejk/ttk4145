@@ -7,15 +7,13 @@
 int i=0;
 
 void* tellOpp(){
-	int j;
-	for (j=0; j<1000000; j++)
+	for (int j=0; j<1000000; j++)
 		i++;
 	return NULL
 }
 
 void* tellNed(){
-	int j;
-	for (j=0; j<1000000; j++)
+	for (int j=0; j<1000000; j++)
 		i--;
 	return NULL
 }
@@ -29,7 +27,7 @@ int main(){
 
 	pthread_join(ink, NULL);
 	pthread_join(dek, NULL);
-	printf("%d\n", i);
+	printf(i);
 
 	return 0;
 }
