@@ -1,0 +1,7 @@
+[user]
+name = olejk
+email = olejk@stud.ntnu.no
+editor = gedit
+
+[core]
+exludesfile = ~/.gitignore
