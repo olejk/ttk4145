@@ -1,0 +1,35 @@
+These things should be google-able:
+
+Why do we use concurrent execution (multithreading/multiprocessing, or the like)? List a fair few reasons.
+Det kan gjøre det enklere å behandle flere separerte oppgaver samtidig. 
+Det vil for eksmepel være en fordel når en bruker ønsker å stoppe overføringen av en større fil. Da kan den ene prossessen/tråden få den andre til å avbryte overføringen. 
+
+How can adding more concurrent tasks make programming simpler? (Think about translation from idea to code...)
+Du kan i større grad separere kodingen til de forskjellige prossessene som  kjøres i parallell. 
+
+And how can it make programming more difficult? (Maybe come back to this after you have worked on part 4 of this exercise)
+Hvis man bruker samme variabel i flere tråder "samtidig" kan dette føre til uforutsigbar oppførsel. Dette må forhindres og innebærer at kompleksiteten øker. 
+Det følger med en del ekstra funksjonalitet man må kjenne til og som må brukes. 
+
+What are the differences between processes, threads, green threads, and coroutines?
+En prossess inneholder ressurser  til å kjøre et program. Dette innebærer at den har egne virutuelle adresser. I tillegg har den minst en tråd, men den kan også skape lage flere. 
+En tråd er en enhet innenfor en prossess. Tråder innenfor samme prossess deler samme virituelle adresser. 
+"green threads" er tråder som er "scheduled" (gitt dataressurser som prosesseringstid, båndbredde for kommunikasjon osv. )av en virituell maskin, istedetfor av operativssystemet. 
+"coroutine"-er innebærer at subrutinene er "nonpreemptive", altså at de ikke kan avbrytes av andre subrutiner. 
+
+
+Which one of these do pthread_create() (C/POSIX), threading.Thread() (Python), go (Go) create?
+
+create i go lager tråder som ligner "green threads"
+
+
+
+How does pythons Global Interpreter Lock (GIL) influence the way a python Thread behaves?
+Minnet i CPython kode er ikke "thread-safe", og dermed er det nødvendig og forhindre at samme minne leses av flere tråder samtidig. GIL er en "mutex" som forhindrer at flere "native threads" kjører byte-kode samtidig. 
+
+With this in mind: What is the workaround for the GIL (Hint: it's another module)? How do you then share resources (variables/data)?
+
+
+What does func GOMAXPROCS(n int) int change?
+Antallet CPU-er som kan kjøres samtidig. 
+(Note: There are other ways of sidestepping the GIL, for example using another interpreter/implementation (IronPython, Jython, Stackless Python, ...))

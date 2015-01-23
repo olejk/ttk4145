@@ -6,7 +6,7 @@ package main
 import (
 	. "fmt"		// Using '.' to avoid prefixing functions with their package names
 	"runtime" 	// This is probably not a good idea for large projects...
-	"time"
+
 )
 
 var i = 0
@@ -37,16 +37,12 @@ func main() {
 	sema := make(chan int, 1)
 	sema <- i
 
-	finished := make(chan bool, 2)
+	finished := make(chan bool, 1)
 
 	go tellOpp(sema, finished)
 	go tellNed(sema, finished)
 	
-	// We have no way to wait for the completion of a goroutine (without additional syncronization of some sort)
-	// We'll come back to using channels in Exercise 2. For now: Sleep.
-	time.Sleep(1000*time.Millisecond)
-	
-	<- sema
+	<-finished	
 	<-finished
 
 	Println(i)
