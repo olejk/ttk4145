@@ -9,31 +9,45 @@ import (
 	"time"
 )
 
-var i int
+var i = 0
 	
-func tellOpp() {
-	for j:=0; j<1000000;j++{
-		i++
+func tellOpp(sema chan int, finished chan bool) {
+	for j:=0; j<1000001;j++{
+		local := <- sema
+		local++
+		i = local
+		sema <- local
 	}
+	finished <- true
 }
 
-func tellNed() {
+func tellNed(sema chan int, finished chan bool) {
 	for j:=0; j<1000000;j++ {
-		i--
+		local := <- sema
+		local--
+		i = local
+		sema <- local
 	}
+	finished <- true
 }
 
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU()) 
-	//Println(runtime.NumCPU())
-	i=0
-	
-	go tellOpp()
-	go tellNed()
+
+	sema := make(chan int, 1)
+	sema <- i
+
+	finished := make(chan bool, 2)
+
+	go tellOpp(sema, finished)
+	go tellNed(sema, finished)
 	
 	// We have no way to wait for the completion of a goroutine (without additional syncronization of some sort)
 	// We'll come back to using channels in Exercise 2. For now: Sleep.
-	time.Sleep(100*time.Millisecond)
-	//Println("Hello from main!")
+	time.Sleep(1000*time.Millisecond)
+	
+	<- sema
+	<-finished
+
 	Println(i)
 }
