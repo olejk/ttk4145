@@ -18,8 +18,8 @@ def tellNed(lock):
 
 def main():
 	lock = Lock()
-	ink = Thread(target = tellOpp, args = (lock),)
-	dek = Thread(target = tellNed, args = (lock),)
+	ink = Thread(target = tellOpp, args = (lock,))
+	dek = Thread(target = tellNed, args = (lock,))
 	ink.start()
 	dek.start()
 	ink.join()

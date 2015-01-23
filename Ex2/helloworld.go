@@ -1,28 +1,26 @@
 // Go 1.2
 // go run helloWorld.go
+
 package main
+
 import (
-. "fmt" // Using '.' to avoid prefixing functions with their package names
-// This is probably not a good idea for large projects...
-"runtime"
-"time"
+	. "fmt"		// Using '.' to avoid prefixing functions with their package names
+	"runtime" 	// This is probably not a good idea for large projects...
+	"time"
 )
 
 var i int
 	
-
 func tellOpp() {
 	for j:=0; j<1000000;j++{
 		i++
 	}
-	//Println(i)
 }
 
 func tellNed() {
 	for j:=0; j<1000000;j++ {
 		i--
 	}
-	//Println(i)
 }
 
 func main() {

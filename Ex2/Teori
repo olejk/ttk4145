@@ -1,0 +1,13 @@
+What is:
+
+- Atomic operation?
+	En operasjon der prosessoren kan lese og skrive i samme bus-operasjon. Kan brukes for å unngå mutex, fordi når tråden utfører operasjonen så ser det ut for de andre trådene som om operasjonen skjer momentant.
+
+- A semaphore?
+	I likhet med en mutex er det et objekt som begrenser tilgangen til en ressurs, men der mutexen gir eksklusiv tilgang gir semaphoren tilgang til et gitt antall tråder. 	
+
+- A mutex?
+	En mutex er et objekt som lar flere programtråder dele samme ressurs, men ikke på samme tid. Tråder som trenger ressursen låser mutexen fra de andre trådene, slik at de andre ikke har tilgang mens de selv bruker den. Den låses opp når tråden har kjørt ferdig.
+
+- A critical section?
+	EN del av koden som aksesserer en delt ressurs som ikke kan bli aksessert av mer en én tråd samtidig. I likhet med mutex kan den bare eies av én tråd av gangen.
