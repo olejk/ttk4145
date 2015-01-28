@@ -13,7 +13,7 @@ const (
 	port_t = "30000"
 )
 
-func udpReceive(port int) {
+func udpReceive(port string) {
 	buff := make([]byte, 1024)
 	addr, _ := net.ResolveUDPAddr("udp", ":" + port)
 	sock, _ := net.ListenUDP("udp", addr)
@@ -32,15 +32,16 @@ func udpSend() {
 		fmt.Println("Failed to resolve address for: " + udpPort)
 	}
 	
-	conn, err := DialUDP("udp", nil, raddr)	
-	/*if err != nil {
-		fmt.Println()
-	}*/
+	conn, err := net.DialUDP("udp", nil, raddr)	
+	if err != nil {
+		fmt.Println("EREREREROROOROROR")
+	}
 	
-	udpReceive(udpPort)
+	go udpReceive(udpPort)
 	for {
 		time.Sleep(1000*time.Millisecond)
-		conn.Write([]byte("bananapancakes")
+		conn.Write([]byte("bananapancakes"))
+		fmt.Println("Msg sent")	
 	}
 
 }
