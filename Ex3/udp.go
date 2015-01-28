@@ -32,15 +32,16 @@ func udpSend() {
 		fmt.Println("Failed to resolve address for: " + udpPort)
 	}
 	
-	conn, err := DialUDP("udp", nil, raddr)	
-	/*if err != nil {
-		fmt.Println()
-	}*/
+	conn, err := net.DialUDP("udp", nil, raddr)	
+	if err != nil {
+		fmt.Println("EREREREROROOROROR")
+	}
 	
-	udpReceive(udpPort)
+	go udpReceive(udpPort)
 	for {
 		time.Sleep(1000*time.Millisecond)
-		conn.Write([]byte("bananapancakes")
+		conn.Write([]byte("bananapancakes"))
+		fmt.Println("Msg sent")	
 	}
 
 }
