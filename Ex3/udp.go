@@ -13,7 +13,7 @@ const (
 	port_t = "30000"
 )
 
-func udpReceive(port int) {
+func udpReceive(port string) {
 	buff := make([]byte, 1024)
 	addr, _ := net.ResolveUDPAddr("udp", ":" + port)
 	sock, _ := net.ListenUDP("udp", addr)
