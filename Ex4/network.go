@@ -35,8 +35,8 @@ func UDPReceive(port string) {
 	}
 }
 
-func UDPSend(m []byte) {
-	raddr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(myIp, udpPort))
+func UDPSend(m []byte, IP string) {
+	raddr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(IP, udpPort))
 	if err != nil {
 		fmt.Println("Failed to resolve address for: " + udpPort)
 	}
@@ -63,5 +63,5 @@ func main() {
 	}
 
 	go UDPReceive(udpPort)
-	UDPSend(b)
+	UDPSend(b, myIp)
 }
