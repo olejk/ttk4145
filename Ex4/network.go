@@ -11,10 +11,11 @@ const (
 	host = "129.241.187.255"
 	udpPort = "20021"
 	port_t = "30000"
+	myIp = "78.91.46.142"
 )
 
 type Message struct {
-	N	int
+	N 		int
 	Str1	string
 	Str2	[]string
 }
@@ -25,18 +26,17 @@ func UDPReceive(port string) {
 	addr, _ := net.ResolveUDPAddr("udp", ":" + port)
 	sock, _ := net.ListenUDP("udp", addr)
 	for {
-		_,_, err:=sock.ReadFromUDP(buff)
+		n,_, err:=sock.ReadFromUDP(buff)
 		if err != nil {
 			fmt.Println("Error UDP read: ", err)
 		} 
-		json.Unmarshal(buff, &mess_rec)
-		
-		fmt.Printf("%+v\n", mess_rec)
+		json.Unmarshal(buff[:n], &mess_rec)
+		fmt.Printf("Received: %+v\n", mess_rec)
 	}
 }
 
 func UDPSend(m []byte) {
-	raddr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(host, udpPort))
+	raddr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(myIp, udpPort))
 	if err != nil {
 		fmt.Println("Failed to resolve address for: " + udpPort)
 	}
@@ -44,7 +44,6 @@ func UDPSend(m []byte) {
 	if err != nil {
 		fmt.Println("Error dial: ", err)
 	}
-	go UDPReceive(udpPort)
 	for {
 		time.Sleep(1000*time.Millisecond)
 		conn.Write(m)
@@ -54,7 +53,7 @@ func UDPSend(m []byte) {
 
 func main() {
 	messages := Message{
-		N:	1,
+		N:		1,
 		Str1:	"string 2",
 		Str2:	[]string{"s1","s2","s3"},	
 	}
@@ -62,10 +61,7 @@ func main() {
 	if err != nil {
 		fmt.Println("error: ", err)
 	}
+
+	go UDPReceive(udpPort)
 	UDPSend(b)
-	
-	
-	
-	
-	
 }
