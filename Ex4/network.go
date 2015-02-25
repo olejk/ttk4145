@@ -1,4 +1,4 @@
-package main
+package network
 
 import(
 	"fmt"
@@ -49,19 +49,4 @@ func UDPSend(m []byte, IP string) {
 		conn.Write(m)
 		fmt.Println("Msg sent")	
 	}
-}
-
-func main() {
-	messages := Message{
-		N:		1,
-		Str1:	"string 2",
-		Str2:	[]string{"s1","s2","s3"},	
-	}
-	b, err := json.Marshal(messages)
-	if err != nil {
-		fmt.Println("error: ", err)
-	}
-
-	go UDPReceive(udpPort)
-	UDPSend(b, myIp)
 }
