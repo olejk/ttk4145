@@ -4,63 +4,65 @@ import{
 	"fmt"
 	"net"
 	"time"
+	"os/exec"
 }
 
 const (
 	host = "129.241.187.255"
-	udpPort = "20021"
-) 
+	port = "20013"
+)
 
-/*func SpawnBackup() {
+func SpawnProcess() {
 	Println("Spawning backup")
-	cmd := exec.Command("mate-terminal", "-x", "go", "run", "phoenix.go")
+	cmd := exec.Command("gnome-terminal", "-x", "go", "run", "phoenix.go")
 	out, err := cmd.Output()
 	if err != nil {
 		println(err.Error())
 		return
 	}
 	print(string(out))
-}*/
-
-func Backup(conn *net.UDPConn) {
-	buff := make([]byte, 256)
-	
-	for {
-		select {
-			case "dead":
-				//new primary with correct countervalue
-				//SpawnBackup()
-
-			default:
-				//save countervalue
-		}
-		
-	}
 }
 
+func slave(sock *net.UDPConn, masterAlive bool, counter *int) bool{
+	for(masterAlive){
+		sock.SetReadDeadline(time.Now().Add(2*time.Second))
+		data := make([]byte, 256)
+		n, _, err := sock.ReadFromUDP(data[0:])
+		if err != nil {
+			masterAlive = false
+			return masterAlive
+		} else {
+			*count = getCount(string(data[:n]))
+			fmt.Println("Slave, master count:", *count)
+		}
+	}
+	return true
+}
 
 func main() {
-	var counter int = 0
-	var data = make([]byte, 256)
+	masterAlive := true
+	counter := 0
+	t_count := 0
+	udpAddr, _ = net.ResolveUDPAddr("udp", ":" + port)
+	sock, _ := net.ListenUDP("udp", udpAddr)
 
-	udpAddr, err = net.ResolveUDPAddr("udp", localhost)
-	if err != nil {
-		fmt.Println("Failed to resolve address")
-	}
+	masterAlive = slave(sock, masterAlive, &counter)
+	sock.Close()
 
-	conn, err := net.DialUDP("udp", nil, raddr)	
-	if err != nil {
-		fmt.Println("Error dial: ", err)
-	}
-
-	go Backup(conn)
+	SpawnProcess()
+	t_count = counter
+	addr, _ := net.ResolveUDPAddr("udp4", host + ":" + port)
+	sock2, _ := net.DialUDP("udp4", nil, addr)
 
 	for {
+		msg := "Count:" + strconv.Itoa(counter)
+		_, err := mConn.Write([]byte(msg))
+		fmt.Println("Master count: ", counter)
+		if err != nil {
+			fmt.Println("Error:Broadcast", err.Error())
+		}
 		counter++
-		fmt.Println(counter)
-		time.Sleep(100*time.Millisecond)
-		data[0] = byte(counter)
-		conn.Write(data)
+		time.Sleep(time.Second)
 	}
-	
+	mConn.Close()
 }
