@@ -1,11 +1,13 @@
 package main
 
-import{
+import (
 	"fmt"
 	"net"
 	"time"
 	"os/exec"
-}
+	"strconv"
+	"strings"
+)
 
 const (
 	host = "129.241.187.255"
@@ -13,7 +15,7 @@ const (
 )
 
 func SpawnProcess() {
-	Println("Spawning backup")
+	fmt.Println("Spawning backup")
 	cmd := exec.Command("gnome-terminal", "-x", "go", "run", "phoenix.go")
 	out, err := cmd.Output()
 	if err != nil {
@@ -32,7 +34,9 @@ func slave(sock *net.UDPConn, masterAlive bool, counter *int) bool{
 			masterAlive = false
 			return masterAlive
 		} else {
-			*count = getCount(string(data[:n]))
+			n2 := strings.Trimleft(string(data[:n], "Count: "))
+			count, err := strconv.Atoi(n)
+			*counter = count
 			fmt.Println("Slave, master count:", *count)
 		}
 	}
