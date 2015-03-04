@@ -47,7 +47,7 @@ func main() {
 	masterAlive := true
 	counter := 0
 	t_count := 0
-	udpAddr, _ = net.ResolveUDPAddr("udp", ":" + port)
+	udpAddr, _ = net.ResolveUDPAddr("udp", host + ":" + port)
 	sock, _ := net.ListenUDP("udp", udpAddr)
 
 	masterAlive = slave(sock, masterAlive, &counter)
@@ -60,7 +60,7 @@ func main() {
 
 	for {
 		msg := "Count:" + strconv.Itoa(counter)
-		_, err := mConn.Write([]byte(msg))
+		_, err := sock2.Write([]byte(msg))
 		fmt.Println("Master count: ", counter)
 		if err != nil {
 			fmt.Println("Error:Broadcast", err.Error())
@@ -68,5 +68,5 @@ func main() {
 		counter++
 		time.Sleep(time.Second)
 	}
-	mConn.Close()
+	sock2.Close()
 }
