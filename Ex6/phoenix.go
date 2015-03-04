@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net"
 	"time"
-	"os/exec"
+	//"os/exec"
 	"strconv"
 	"strings"
 )
@@ -14,7 +14,7 @@ const (
 	port = "20013"
 )
 
-func SpawnProcess() {
+/*func SpawnProcess() {
 	fmt.Println("Spawning backup")
 	cmd := exec.Command("gnome-terminal", "-x", "go", "run", "phoenix.go")
 	out, err := cmd.Output()
@@ -23,7 +23,7 @@ func SpawnProcess() {
 		return
 	}
 	print(string(out))
-}
+}*/
 
 func slave(sock *net.UDPConn, masterAlive bool, counter *int) bool{
 	for(masterAlive){
@@ -34,10 +34,10 @@ func slave(sock *net.UDPConn, masterAlive bool, counter *int) bool{
 			masterAlive = false
 			return masterAlive
 		} else {
-			n2 := strings.Trimleft(string(data[:n], "Count: "))
-			count, err := strconv.Atoi(n)
+			s := strings.TrimLeft(string(data[:n]), "Count: ")
+			count,_ := strconv.Atoi(s)
 			*counter = count
-			fmt.Println("Slave, master count:", *count)
+			fmt.Println("Slave, master count:", *counter)
 		}
 	}
 	return true
@@ -47,14 +47,14 @@ func main() {
 	masterAlive := true
 	counter := 0
 	t_count := 0
-	udpAddr, _ = net.ResolveUDPAddr("udp", host + ":" + port)
+	udpAddr, _ := net.ResolveUDPAddr("udp", host + ":" + port)
 	sock, _ := net.ListenUDP("udp", udpAddr)
-
 	masterAlive = slave(sock, masterAlive, &counter)
 	sock.Close()
 
-	SpawnProcess()
+	//SpawnProcess()
 	t_count = counter
+	fmt.Println(t_count)
 	addr, _ := net.ResolveUDPAddr("udp4", host + ":" + port)
 	sock2, _ := net.DialUDP("udp4", nil, addr)
 
