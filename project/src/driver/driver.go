@@ -1,17 +1,10 @@
 package driver
 
-import()
-
-const (
-	N_FLOORS			int = 4
-	N_BUTTONS			int = 3
-	BUTTON_CALL_UP		int = 0
-	BUTTON_CALL_DOWN	int = 1
-	BUTTON_COMMAND		int = 2
-	DIR_UP				int = 1
-	DIR_DOWN			int = -1
-	DIR_STOP			int = 0
+import(
+	. "def"
 )
+
+
 
 var(
 	lamp_channel_matrix [N_FLOORS][N_BUTTONS] int = [N_FLOORS][N_BUTTONS] int {
@@ -34,6 +27,7 @@ func Elev_init() int {
 	if Io_init() == 0 {
 		return 0
 	}
+
 	// Zero all floor button lamps
 	for i := 0; i < N_FLOORS; i++ {
 		if i != 0 {
@@ -48,6 +42,13 @@ func Elev_init() int {
 	Elev_set_stop_lamp(0)
     Elev_set_door_open_lamp(0)
     Elev_set_floor_indicator(0)
+
+	if (Elev_get_floor_sensor_signal() == -1) {
+		Elev_set_motor_direction(DIR_DOWN)
+	}    
+
+  	for Elev_get_floor_sensor_signal() == -1 {}
+  	Elev_set_motor_direction(DIR_STOP)
 
     return 1
 }
