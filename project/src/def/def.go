@@ -30,3 +30,8 @@ type Msg struct{
 	InOrders		[N_FLOORS]int
 
 }
+
+type Order struct{
+	floor 	int
+	button 	int
+}
