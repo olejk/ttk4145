@@ -6,15 +6,15 @@ import(
 	"encoding/json"
 )
 
-func encodeMsg(msgs Msg) []byte {
-	encMsg, err := json.Marshal(msgs)
+func encodeMsg(msg def.Msg) []byte {
+	encMsg, err := json.Marshal(msg)
 	if err != nil {
 		fmt.Println("Error encoding msg: ", err)
 	}
 	return encMsg
 }
 
-func decodeMsg(msg []byte) Msg {
+func decodeMsg(msg []byte) def.Msg {
 	var msg_rec Message
 	err := json.Unmarshal(msg[:len(msg)], &msg_rec)
 	if err != nil {
