@@ -1,4 +1,5 @@
 package stateMachine
+
 import (
 	. "driver"
 	"fmt"
@@ -6,10 +7,7 @@ import (
 	. "def"
 ) 
 
-
-
-
-func floorReached(){
+func floorReached(timerChan chan string){
 	switch State{
 		case IDLE: 
 			fmt.Println("Error: no floor reached in state IDLE")
@@ -17,14 +15,13 @@ func floorReached(){
 			if(ShouldIStop){										//må skrive hvilke pakke funksjon er i. Funksjon ikke implementert
 				Elev_set_motor_direction(DIR_STOP)
 				Elev_set_door_open_lamp(ON)
-				doorTimer <- START									//ikke implementert
+				timerChan <- "START"
 				State = DOOR_OPEN
 			}
 		case DOOR_OPEN:
 			fmt.Println("Error: no floor reached in state DOOR_OPEN")
 	}
 }
-
 
 func timerOut(){
 	switch State{
@@ -44,7 +41,6 @@ func timerOut(){
 	}
 }
 
-
 func newOrderInEmptyQueue(doorTimer chan int){
 	switch State{
 	case IDLE:
@@ -63,15 +59,15 @@ func newOrderInEmptyQueue(doorTimer chan int){
 	}
 }
 
-func newOrderInCurrentFloor(doorTimer chan int) {
+func newOrderInCurrentFloor(timerChan chan int) {
 	case IDLE:
 		Elev_set_door_open_lamp(ON)
 		State = DOOR_OPEN
-		doorTimer <- START
+		timerChan <- "START"
 	case MOVING:
-		fmt.Println("Error: ....")
+		fmt.Println("Error: New order in current floor while moving.")
 	case DOOR_OPEN:
-		doorTimer <- START
+		timerChan <- "START"
 }
 
 
