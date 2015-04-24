@@ -1,0 +1,117 @@
+package main
+
+import (
+	"fmt"
+	"time"
+	"math/rand"
+)
+
+
+const (
+
+	N_ELEV				int = 1
+	N_FLOORS			int = 4
+	N_BUTTONS			int = 3
+	BUTTON_CALL_UP		int = 0
+	BUTTON_CALL_DOWN	int = 1
+	BUTTON_COMMAND		int = 2
+	DIR_UP				int = 1
+	DIR_DOWN			int = -1
+	DIR_STOP			int = 0
+	ON 					int = 1
+	OFF					int = 0
+
+	//states
+	IDLE 		int = 0
+	MOVING 		int = 1
+	DOOR_OPEN 	int = 2
+
+)
+
+type Msg struct{
+	State 			int
+	PrevFloor 		int
+	Dir   			int 	//never 0. 
+	ExUpOrders 		[N_FLOORS]int
+	ExDownOrders	[N_FLOORS]int
+	InOrders		[N_FLOORS]int
+
+}
+
+type Order struct{
+	floor 	int
+	button 	int
+}
+
+var currentSignalMatrix 	[3][N_FLOORS]int 
+var previousSignalMatrix 	[3][N_FLOORS]int 
+var previousFloorSensorSignal			 int 
+
+func randomTall()int{
+	rand := rand.Intn(10)
+	fmt.Println(rand)
+	if(rand > 8){
+		return 1
+	}
+	return 0
+}
+
+func ButtonEventDetector(orderEventChannel chan Order){
+	
+		for floor:=0;floor<N_FLOORS;floor++{
+			for button:=0;button<3;button++{
+				currentSignalMatrix[button][floor] = randomTall()// Elev_get_button_signal(button,floor)
+				if(currentSignalMatrix[button][floor] == 1 && previousSignalMatrix[button][floor] == 0){
+					orderEventChannel <- Order{floor, button}
+				}
+				previousSignalMatrix[button][floor] = currentSignalMatrix[button][floor]
+			}
+		}
+		time.Sleep(10*time.Millisecond)
+	
+}
+
+
+func floorReachedEventDetector(floorReachedEventChannel chan int){
+	
+		/*
+		if (Elev_get_floor_sensor_signal() != -1 && previousFloorSensorSignal == -1){
+			floorReachedEvent <- Elev_get_floor_sensor_signal()
+		}
+		*/
+		time.Sleep(10*time.Millisecond)
+		floorReachedEventChannel <- 2
+	
+}
+
+
+func eventHandler(){
+	orderEventChannel := make(chan Order)
+	floorReachedEventChannel := make(chan int)
+	go ButtonEventDetector(orderEventChannel)
+	go floorReachedEventDetector(floorReachedEventChannel)
+	
+	
+	for{
+		select{
+		case order := <- orderEventChannel:
+			fmt.Println("new order! , Floor: ",order.floor, ". Button: " , order.button )
+			//videresend beskjed til andre heiser om at ny ordre legges til. 
+			//addOrder()
+		case floor := <- floorReachedEventChannel:
+			fmt.Println("New floor reached :", floor)
+			//floorReached()
+		}
+	}
+}
+
+
+
+func main(){
+	eventHandler()
+	//randomTall()
+}
+
+
+
+
