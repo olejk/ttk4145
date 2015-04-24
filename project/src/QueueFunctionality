@@ -1,0 +1,149 @@
+package main
+
+import (
+	"fmt"
+	//. "def"
+	"time"
+)
+
+
+const (
+
+	N_ELEV				int = 1
+	N_FLOORS			int = 4
+	N_BUTTONS			int = 3
+	BUTTON_CALL_UP		int = 0
+	BUTTON_CALL_DOWN	int = 1
+	BUTTON_COMMAND		int = 2
+	DIR_UP				int = 1
+	DIR_DOWN			int = -1
+	DIR_STOP			int = 0
+	ON 					int = 1
+	OFF					int = 0
+
+	//states
+	IDLE 		int = 0
+	MOVING 		int = 1
+	DOOR_OPEN 	int = 2
+
+)
+
+type Msg struct{
+	State 			int
+	PrevFloor 		int
+	Dir   			int 	//never 0. 
+	ExUpOrders 		[N_FLOORS]int
+	ExDownOrders	[N_FLOORS]int
+	InOrders		[N_FLOORS]int
+}
+
+var msg= Msg{}
+
+func zeroOrders() bool {
+	for i:=0;i<N_FLOORS;i++{
+		if(msg.ExUpOrders[i] == 1 || msg.ExDownOrders[i] == 1 || msg.InOrders[i] == 1 ){
+			return false
+		}
+	}
+	return true
+}
+
+
+// 1:  first checks if it should stop in the current floor
+// 2:  if not, check orders furter in the current direction 
+// 3:  if not, check orders in oppisite direction in current floor
+// 4:  if not, change direction 
+func NextDirection() int{
+	if(msg.InOrders[msg.PrevFloor] == 1) {
+		return DIR_STOP
+	}
+	
+	if(msg.Dir == DIR_UP && msg.ExUpOrders[msg.PrevFloor] == 1 || msg.Dir == DIR_DOWN && 
+	msg.ExDownOrders[msg.PrevFloor] == 1){
+		return DIR_STOP	
+	}
+	
+	if(zeroOrders()){
+		return DIR_STOP
+	}
+
+	if(msg.Dir == DIR_UP){
+		for i:=msg.PrevFloor+1;i<N_FLOORS;i++{
+			if(msg.InOrders[i] == 1 || msg.ExUpOrders[i] == 1 || msg.ExDownOrders[i] == 1){
+				return DIR_UP
+			}
+		}
+		
+		if(msg.ExDownOrders[msg.PrevFloor]  == 1 ){
+			return DIR_STOP
+		}
+		
+		fmt.Println("ERROR: error in NextDirection-function, with msg.Dir UP" )
+		
+		
+		
+		return DIR_DOWN
+					
+	}else{
+		
+		for i:=msg.PrevFloor-1;i>=0;i--{
+			if(msg.InOrders[i] == 1 || msg.ExUpOrders[i] == 1 || msg.ExDownOrders[i] == 1){
+				return DIR_DOWN
+			}
+		}
+		
+		if(msg.ExUpOrders[msg.PrevFloor] == 1 ){
+			return DIR_STOP
+		}
+		
+		fmt.Println("ERROR: error in NextDirection-function, with msg.Dir DOWN" )
+		return DIR_UP
+	}		
+}
+
+
+func removeDoneOrders(){
+	msg.InOrders[msg.PrevFloor] = 0
+	if(msg.Dir == DIR_UP){
+		msg.ExUpOrders[msg.PrevFloor] = 0 
+	}else if(msg.Dir == DIR_DOWN){
+		msg.ExDownOrders[msg.PrevFloor] = 0
+	}
+}
+
+
+func test(){
+	
+	msg.Dir=DIR_UP
+	msg.ExUpOrders[2]=1
+	msg.ExUpOrders[3]=1
+	msg.InOrders[1]=1
+	msg.InOrders[2]=1
+	msg.InOrders[3]=1
+	msg.ExDownOrders[3]=1
+	
+	for i:=0;i<10;i++{
+		next_Dir:=NextDirection()
+		fmt.Println(msg)
+		fmt.Println("Next_Dir: ",next_Dir )
+		fmt.Println("state dir: ", msg.Dir)
+		fmt.Println("state floor : ", msg.PrevFloor )
+			
+		msg.PrevFloor=msg.PrevFloor+next_Dir
+		if(next_Dir != 0){
+			msg.Dir=next_Dir
+		}
+		time.Sleep(1000*time.Millisecond)
+		removeDoneOrders()
+		
+	}
+}
+
+func main(){
+	test()
+	
+}					
+
+
+
+
