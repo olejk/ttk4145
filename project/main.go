@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
-	"driver"
+	. "driver"
     . "network"
     . "def"
+    . "eventDetection"
+    . "timer"
 )
 
 func SEND(c chan Udp_message, msg Udp_message){
@@ -17,41 +19,38 @@ func RECEIVE(c chan Udp_message) {
     fmt.Println(msg.Data)
 }
 
+func initStateMachine(){
+    Msg.State = IDLE
+    Msg.Dir = DIR_UP
+    Msg.PrevFloor = Elev_get_floor_sensor_signal()
+}
 
 func main() {
+    timerChan := make(chan string)
+    timeOutChan := make(chan int)
+    doneChan := make(chan string)
+    
+   
+    // var localListenPort, broadcastListenPort, message_size int=20003,30000,1024
+    // send_ch := make(chan Udp_message)
+    // receive_ch := make(chan Udp_message)
+    // var msg=Udp_message{"broadcast","hei",1024}
 
+    // Udp_init(localListenPort, broadcastListenPort, message_size, send_ch, receive_ch)
 
-    var localListenPort, broadcastListenPort, message_size int=20003,30000,1024
-    send_ch := make(chan Udp_message)
-    receive_ch := make(chan Udp_message)
-    var msg=Udp_message{"broadcast","hei",1024}
-
-    Udp_init(localListenPort, broadcastListenPort, message_size, send_ch, receive_ch)
-
-    go RECEIVE(receive_ch)
-    go SEND(send_ch, msg)
+    // go RECEIVE(receive_ch)
+    // go SEND(send_ch, msg)
     
 
     // Initialize hardware
-    if (driver.Elev_init() == 0) {
+    if (Elev_init() == 0) {
         fmt.Printf("Unable to initialize elevator hardware!\n")
     }
+    initStateMachine()
 
-    fmt.Printf("Press STOP button to stop elevator and exit program.\n");
-
-    driver.Elev_init()
-
-
-
-   
-    for {
-            // Stop elevator and exit program if the stop button is pressed
-        
-        if (driver.Elev_get_stop_signal() == 1) {
-            driver.Elev_set_motor_direction(driver.DIR_STOP)
-            break
-
-        }
-    }
+    go DoorTimer(timerChan, timeOutChan)
+    go EventHandler(timerChan, timeOutChan)
+    
+    fmt.Println(<-doneChan)
 }
 

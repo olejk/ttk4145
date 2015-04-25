@@ -41,7 +41,6 @@ func Elev_init() int {
 	// Clear stop lamp, door open lamp, and set floor indicator to ground floor
 	Elev_set_stop_lamp(0)
     Elev_set_door_open_lamp(0)
-    Elev_set_floor_indicator(0)
 
 	if (Elev_get_floor_sensor_signal() == -1) {
 		Elev_set_motor_direction(DIR_DOWN)
@@ -49,6 +48,7 @@ func Elev_init() int {
 
   	for Elev_get_floor_sensor_signal() == -1 {}
   	Elev_set_motor_direction(DIR_STOP)
+  	Elev_set_floor_indicator(Elev_get_floor_sensor_signal())
 
     return 1
 }

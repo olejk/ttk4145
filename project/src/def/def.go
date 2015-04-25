@@ -1,5 +1,7 @@
 package def
 
+import "fmt"
+
 const (
 
 	N_ELEV				int = 1
@@ -21,7 +23,7 @@ const (
 
 )
 
-type Msg struct{
+type MSG struct{
 	State 			int
 	PrevFloor 		int
 	Dir   			int 	//never 0. 
@@ -32,6 +34,43 @@ type Msg struct{
 }
 
 type Order struct{
-	floor 	int
-	button 	int
+	Floor 	int
+	Button 	int
 }
+
+var Msg = MSG{}
+
+// func (msg MSG) String() string{
+// 	return fmt.Sprintf()
+// }
+
+func PrintMsg() {
+	fmt.Println()
+
+	for i:=0;i<N_FLOORS;i++ {
+		defer fmt.Println(Msg.ExDownOrders[i], " " ,Msg.ExUpOrders[i], "  ", Msg.InOrders[i])
+	}
+	switch Msg.State {
+	case IDLE:
+		fmt.Println("State: IDLE")
+	case MOVING:
+		fmt.Println("State: MOVING")
+	case DOOR_OPEN: 
+		fmt.Println("State: DOOR_OPEN")
+	default:
+		fmt.Println("Invalid state: ", Msg.State)
+	}
+
+	fmt.Println("Floor: ", Msg.PrevFloor)
+
+	switch Msg.Dir {
+		case DIR_UP:
+			fmt.Println("DIR UP")
+		case DIR_DOWN:
+			fmt.Println("DIR DOWN")
+		default:
+			fmt.Println("DIR 0, ERROR!!!")
+	}
+}
+
+

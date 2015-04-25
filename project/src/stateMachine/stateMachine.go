@@ -3,54 +3,68 @@ package stateMachine
 import (
 	. "driver"
 	"fmt"
-	"queue"
 	. "def"
+	. "queue"
 ) 
 
-func floorReached(timerChan chan string){
-	switch State{
+func FloorReached(timerChan chan string) {
+	Elev_set_floor_indicator(Elev_get_floor_sensor_signal())
+	switch Msg.State {
 		case IDLE: 
 			fmt.Println("Error: no floor reached in state IDLE")
 		case MOVING:
-			if(ShouldIStop){										//må skrive hvilke pakke funksjon er i. Funksjon ikke implementert
+			if (NextDirection() == 0) {
+				fmt.Println("FloorReached: 1")
+				RemoveDoneOrders()						
 				Elev_set_motor_direction(DIR_STOP)
 				Elev_set_door_open_lamp(ON)
 				timerChan <- "START"
-				State = DOOR_OPEN
+				Msg.State = DOOR_OPEN
 			}
 		case DOOR_OPEN:
 			fmt.Println("Error: no floor reached in state DOOR_OPEN")
 	}
 }
 
-func timerOut(){
-	switch State{
+func TimerOut() {
+	switch Msg.State {
 		case IDLE:
 			fmt.Println("ERROR: Timeout in state IDLE")
 		case MOVING:
 			fmt.Println("ERROR: Timeout in state MOVING")
 		case DOOR_OPEN:
 			Elev_set_door_open_lamp(OFF)
-			if(nextDirection() == DIR_STOP ){
-				State = IDLE
+			if (NextDirection() == DIR_STOP ) {
+				fmt.Println("TimerOut: 1")
+				Msg.State = IDLE
 				return 
-			}else if( nextDirection() != message.Dir){
-				message.Dir = nextDirection()
+			} else if (NextDirection() != Msg.Dir) {
+				fmt.Println("TimerOut: 2")
+				Msg.Dir = NextDirection()
+				RemoveDoneOrders()
 			}
-			Elev_set_motor_direction(message.Dir)
+			Elev_set_motor_direction(Msg.Dir)
+			Msg.State = MOVING
 	}
 }
 
-func newOrderInEmptyQueue(doorTimer chan int){
-	switch State{
+func NewOrderInEmptyQueue(timerChan chan string) {
+	fmt.Println("NewOrderInEmptyQueue: 1")
+	fmt.Println(NextDirection())
+	switch Msg.State {
 	case IDLE:
-		if(nextDirection() == DIR_STOP){
+		if (NextDirection() == DIR_STOP) {
 			Elev_set_door_open_lamp(ON)
-			doorTimer <- START
-			State = DOOR_OPEN
+			RemoveDoneOrders()
+			fmt.Println("NewOrderInEmptyQueue: 2")
+			timerChan <- "START"	
+			fmt.Println("NewOrderInEmptyQueue: 3")
+			Msg.State = DOOR_OPEN
 		} else {
-			Elev_set_motor_direction(nextDirection())
-			State = MOVING
+			Elev_set_motor_direction(NextDirection())
+			fmt.Println("NewOrderInEmptyQueue: 4")
+			// Msg.Dir = NextDirection() 
+			Msg.State = MOVING
 		}
 	case MOVING:
 		fmt.Println("Error: newOrderInEmptyQueue in state MOVING")
@@ -59,15 +73,19 @@ func newOrderInEmptyQueue(doorTimer chan int){
 	}
 }
 
-func newOrderInCurrentFloor(timerChan chan int) {
-	case IDLE:
-		Elev_set_door_open_lamp(ON)
-		State = DOOR_OPEN
-		timerChan <- "START"
-	case MOVING:
-		fmt.Println("Error: New order in current floor while moving.")
-	case DOOR_OPEN:
-		timerChan <- "START"
+func NewOrderInCurrentFloor(timerChan chan string) {
+	switch Msg.State{
+		case IDLE:
+			RemoveDoneOrders()
+			Elev_set_door_open_lamp(ON)
+			Msg.State = DOOR_OPEN
+			timerChan <- "START"
+		case MOVING:
+			fmt.Println("Error: New order in current floor while moving.")
+		case DOOR_OPEN:
+			RemoveDoneOrders()
+			timerChan <- "START"
+	}
 }
 
 
