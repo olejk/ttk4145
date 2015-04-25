@@ -21,7 +21,12 @@ const (
 	MOVING 		int = 1
 	DOOR_OPEN 	int = 2
 
+	LOCAL_LISTEN_PORT		int = 20005
+	BROADCAST_LISTEN_PORT	int = 30000
+	MESSAGE_SIZE	 		int = 1024
 )
+
+
 
 type MSG struct{
 	State 			int
@@ -30,7 +35,6 @@ type MSG struct{
 	ExUpOrders 		[N_FLOORS]int
 	ExDownOrders	[N_FLOORS]int
 	InOrders		[N_FLOORS]int
-
 }
 
 type Order struct{
@@ -38,7 +42,16 @@ type Order struct{
 	Button 	int
 }
 
+type Udp_message struct {
+	Raddr  string //if receiving raddr=senders address, if sending raddr should be set to "broadcast" or an ip:port
+	Data   []byte //TODO: implement another encoding, strings are meh
+	Length int    //length of received data, in #bytes // N/A for sending
+}
+
 var Msg = MSG{}
+
+var buff = make([]byte, 1024)
+var Udp_msg = Udp_message{"broadcast", buff, 1024}
 
 // func (msg MSG) String() string{
 // 	return fmt.Sprintf()

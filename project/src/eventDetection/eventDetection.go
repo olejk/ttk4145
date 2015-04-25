@@ -7,6 +7,7 @@ import (
 	. "driver"
 	. "stateMachine"
 	. "queue"
+	. "encdec"
 )
 
 func buttonEventDetector(orderEventChannel chan Order){
@@ -50,13 +51,16 @@ func NewOrderInCurrentFloorEventDetector(order Order) bool {
 }
 
 
-func EventHandler(timerChan chan string, timeOutChan chan int) {
+func EventHandler(timerChan chan string, timeOutChan chan int, send_ch, receice_ch chan Udp_message) {
 	orderEventChannel := make(chan Order)
 	floorReachedEventChannel := make(chan int)
 	go buttonEventDetector(orderEventChannel)
 	go floorReachedEventDetector(floorReachedEventChannel)
 	
 	for{
+		encMsg := EncodeMsg(Msg)
+		Udp_msg.Data = encMsg
+		send_ch <- Udp_msg
 		select{
 		case order := <- orderEventChannel:
 			AddOrder(order)
@@ -79,6 +83,9 @@ func EventHandler(timerChan chan string, timeOutChan chan int) {
 		case <- timerChan: 
 			TimerOut()
 		}
+
+		UDP_Rec := <- receice_ch
+		fmt.Println(DecodeMsg(UDP_Rec.Data))
 	}
 }
 

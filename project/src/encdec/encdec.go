@@ -2,11 +2,11 @@ package encdec
 
 import(
 	"fmt"
-	"def"
+	. "def"
 	"encoding/json"
 )
 
-func encodeMsg(msg def.Msg) []byte {
+func EncodeMsg(msg MSG) []byte {
 	encMsg, err := json.Marshal(msg)
 	if err != nil {
 		fmt.Println("Error encoding msg: ", err)
@@ -14,8 +14,8 @@ func encodeMsg(msg def.Msg) []byte {
 	return encMsg
 }
 
-func decodeMsg(msg []byte) def.Msg {
-	var msg_rec Message
+func DecodeMsg(msg []byte) MSG {
+	var msg_rec MSG
 	err := json.Unmarshal(msg[:len(msg)], &msg_rec)
 	if err != nil {
 		fmt.Println("Error decoding msg: ", err)

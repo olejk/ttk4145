@@ -4,16 +4,11 @@ import (
 	"fmt"
 	"net"
 	"strconv"
+	. "def"
 )
 
 var laddr *net.UDPAddr //Local address
 var baddr *net.UDPAddr //Broadcast address
-
-type Udp_message struct {
-	Raddr  string //if receiving raddr=senders address, if sending raddr should be set to "broadcast" or an ip:port
-	Data   string //TODO: implement another encoding, strings are meh
-	Length int    //length of received data, in #bytes // N/A for sending
-}
 
 func Udp_init(localListenPort, broadcastListenPort, message_size int, send_ch, receive_ch chan Udp_message) (err error) {
 	//Generating broadcast address
@@ -128,6 +123,6 @@ func udp_connection_reader(conn *net.UDPConn, message_size int, rcv_ch chan Udp_
 			fmt.Printf("Error: udp_connection_reader: reading\n")
 			panic(err)
 		}
-		rcv_ch <- Udp_message{Raddr: raddr.String(), Data: string(buf), Length: n}
+		rcv_ch <- Udp_message{Raddr: raddr.String(), Data: []byte(buf), Length: n}
 	}
 }

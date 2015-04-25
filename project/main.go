@@ -26,11 +26,15 @@ func initStateMachine(){
 }
 
 func main() {
+    doneChan := make(chan string)
+
     timerChan := make(chan string)
     timeOutChan := make(chan int)
-    doneChan := make(chan string)
     
-   
+    send_ch := make(chan Udp_message)
+    receive_ch := make(chan Udp_message)
+
+    go Udp_init(LOCAL_LISTEN_PORT, BROADCAST_LISTEN_PORT, MESSAGE_SIZE, send_ch, receive_ch)
     // var localListenPort, broadcastListenPort, message_size int=20003,30000,1024
     // send_ch := make(chan Udp_message)
     // receive_ch := make(chan Udp_message)
@@ -49,7 +53,7 @@ func main() {
     initStateMachine()
 
     go DoorTimer(timerChan, timeOutChan)
-    go EventHandler(timerChan, timeOutChan)
+    go EventHandler(timerChan, timeOutChan, send_ch, receive_ch)
     
     fmt.Println(<-doneChan)
 }
