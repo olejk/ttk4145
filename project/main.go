@@ -7,6 +7,7 @@ import (
     . "def"
     . "eventDetection"
     . "timer"
+    // . "encdec"
 )
 
 func SEND(c chan Udp_message, msg Udp_message){
@@ -35,6 +36,15 @@ func main() {
     receive_ch := make(chan Udp_message)
 
     go Udp_init(LOCAL_LISTEN_PORT, BROADCAST_LISTEN_PORT, MESSAGE_SIZE, send_ch, receive_ch)
+
+    // encMsg := EncodeMsg(Msg)
+    // Udp_msg.Data = encMsg
+    // send_ch <- Udp_msg
+
+    // UDP_Rec := <- receive_ch
+    // fmt.Println("Data: ", UDP_Rec.Data)
+    // fmt.Println(DecodeMsg(UDP_Rec.Data, UDP_Rec.Lenght))
+
     // var localListenPort, broadcastListenPort, message_size int=20003,30000,1024
     // send_ch := make(chan Udp_message)
     // receive_ch := make(chan Udp_message)

@@ -14,9 +14,9 @@ func EncodeMsg(msg MSG) []byte {
 	return encMsg
 }
 
-func DecodeMsg(msg []byte) MSG {
+func DecodeMsg(msg []byte, lenght int) MSG {
 	var msg_rec MSG
-	err := json.Unmarshal(msg[:len(msg)], &msg_rec)
+	err := json.Unmarshal(msg[:lenght], &msg_rec)
 	if err != nil {
 		fmt.Println("Error decoding msg: ", err)
 	}

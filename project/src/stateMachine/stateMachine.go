@@ -5,15 +5,16 @@ import (
 	"fmt"
 	. "def"
 	. "queue"
-) 
+)
 
-func FloorReached(timerChan chan string) {
+func FloorReached(timerChan chan string, stopped bool) {
 	Elev_set_floor_indicator(Elev_get_floor_sensor_signal())
 	switch Msg.State {
 		case IDLE: 
 			fmt.Println("Error: no floor reached in state IDLE")
 		case MOVING:
 			if (NextDirection() == 0) {
+				stopped = true
 				fmt.Println("FloorReached: 1")
 				RemoveDoneOrders()						
 				Elev_set_motor_direction(DIR_STOP)

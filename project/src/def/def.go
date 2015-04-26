@@ -22,13 +22,18 @@ const (
 	DOOR_OPEN 	int = 2
 
 	LOCAL_LISTEN_PORT		int = 20005
-	BROADCAST_LISTEN_PORT	int = 30000
+	BROADCAST_LISTEN_PORT	int = 30005
 	MESSAGE_SIZE	 		int = 1024
+
+	NOTHING 		int = 0
+	ADD_ORDERS 		int = 1
+	REMOVE_ORDERS 	int = 2
 )
 
 
 
 type MSG struct{
+	MsgType			int
 	State 			int
 	PrevFloor 		int
 	Dir   			int 	//never 0. 
@@ -61,7 +66,7 @@ func PrintMsg() {
 	fmt.Println()
 
 	for i:=0;i<N_FLOORS;i++ {
-		defer fmt.Println(Msg.ExDownOrders[i], " " ,Msg.ExUpOrders[i], "  ", Msg.InOrders[i])
+		defer fmt.Println(Msg.ExDownOrders[i], " " ,Msg.ExUpOrders[i], " ", Msg.InOrders[i])
 	}
 	switch Msg.State {
 	case IDLE:

@@ -34,7 +34,6 @@ func ExactlyOneOrder() bool {
 	return sum == 1
 }
 
-
 // 1:  first checks if it should stop in the current floor
 // 2:  if not, check orders furter in the current direction 
 // 3:  if not, check orders in oppisite direction in current floor
@@ -88,7 +87,6 @@ func ExistOrdersInCurrentDir() bool {
 	if (Msg.InOrders[Msg.PrevFloor] == 1) {
 			return true
 	}
-
 	if (Msg.Dir == DIR_UP) {
 		for i:=Msg.PrevFloor+1;i<N_FLOORS;i++ {
 			if(Msg.InOrders[i] == 1 || Msg.ExUpOrders[i] == 1 || Msg.ExDownOrders[i] == 1) {
@@ -100,7 +98,6 @@ func ExistOrdersInCurrentDir() bool {
 		if(Msg.ExUpOrders[Msg.PrevFloor] == 1){
 			return true
 		}
-
 	} else if (Msg.Dir == DIR_DOWN) {
 		for i:=Msg.PrevFloor-1;i>=0;i-- {
 			if (Msg.InOrders[i] == 1 || Msg.ExUpOrders[i] == 1 || Msg.ExDownOrders[i] == 1) {
@@ -108,12 +105,9 @@ func ExistOrdersInCurrentDir() bool {
 				return true
 			}
 		}
-
 		if(Msg.ExDownOrders[Msg.PrevFloor] == 1){
 			return true
 		}
-
-
 	}
 	return false
 }
@@ -129,8 +123,6 @@ func RemoveDoneOrders() {
 		Msg.ExDownOrders[Msg.PrevFloor] = 0
 		Elev_set_button_lamp(BUTTON_CALL_DOWN, Msg.PrevFloor, OFF)
 	}
-
-
 	if (NextDirection() != Msg.Dir) {
 		fmt.Println("ND ", NextDirection())
 		fmt.Println("Msg.Dir: ", Msg.Dir)
@@ -157,6 +149,8 @@ func AddOrder(order Order) {
 	}
 	//Bør kanskje flyttes
 	Elev_set_button_lamp(order.Button, order.Floor, ON)	
+
+	Msg.MsgType = ADD_ORDERS
 }
 
 
